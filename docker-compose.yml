@@ -4,19 +4,18 @@ services:
     image: postgres:15-alpine
     container_name: ecommerce-postgres
     environment:
-      POSTGRES_DB: ecommerce_auth
       POSTGRES_USER: ecommerce_user
       POSTGRES_PASSWORD: ecommerce_password
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./packages/auth/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./packages/01-init-databases.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - ecommerce-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ecommerce_user -d ecommerce_auth"]
+      test: ["CMD-SHELL", "pg_isready -U ecommerce_user -d postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -86,6 +85,7 @@ services:
     environment:
       - NODE_ENV=production
       - SERVICE_NAME=catalog
+      - DATABASE_URL=postgresql://ecommerce_user:ecommerce_password@postgres:5432/ecommerce_catalog
     networks:
       - ecommerce-network
     restart: unless-stopped
