@@ -2,7 +2,30 @@
   "name": "ecommerce-monorepo",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ]
+  "scripts": {
+    "install:all": "cd packages/api-gateway && npm install && cd ../auth && npm install && cd ../cart && npm install && cd ../catalog && npm install && cd ../notifications && npm install && cd ../orders && npm install && cd ../payments && npm install",
+    "build:api-gateway": "cd packages/api-gateway && npm run build",
+    "build:auth": "cd packages/auth && npm run build",
+    "build:cart": "cd packages/cart && npm run build",
+    "build:catalog": "cd packages/catalog && npm run build",
+    "build:notifications": "cd packages/notifications && npm run build",
+    "build:orders": "cd packages/orders && npm run build",
+    "build:payments": "cd packages/payments && npm run build",
+    "build:all": "npm run build:api-gateway && npm run build:auth && npm run build:cart && npm run build:catalog && npm run build:notifications && npm run build:orders && npm run build:payments",
+    "start:api-gateway": "npm run build:api-gateway && cd packages/api-gateway && npm start",
+    "start:auth": "npm run build:auth && cd packages/auth && npm start",
+    "start:cart": "npm run build:cart && cd packages/cart && npm start",
+    "start:catalog": "npm run build:catalog && cd packages/catalog && npm start",
+    "start:notifications": "npm run build:notifications && cd packages/notifications && npm start",
+    "start:orders": "npm run build:orders && cd packages/orders && npm start",
+    "start:payments": "npm run build:payments && cd packages/payments && npm start",
+    "dev:api-gateway": "cd packages/api-gateway && npm run dev",
+    "dev:auth": "cd packages/auth && npm run dev",
+    "dev:cart": "cd packages/cart && npm run dev",
+    "dev:catalog": "cd packages/catalog && npm run dev",
+    "dev:notifications": "cd packages/notifications && npm run dev",
+    "dev:orders": "cd packages/orders && npm run dev",
+    "dev:payments": "cd packages/payments && npm run dev",
+    "clean": "rm -rf packages/*/node_modules packages/*/dist"
+  }
 }

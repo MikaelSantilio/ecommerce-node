@@ -1,10 +1,12 @@
 # Dependencies
 /node_modules
+packages/*/node_modules/
 /.pnp
 .pnp.js
 
 # Production
 /dist
+packages/*/dist/
 /build
 
 # Logs
