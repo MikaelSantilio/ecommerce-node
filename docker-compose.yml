@@ -1,0 +1,162 @@
+services:
+  # API Gateway - Main entry point
+  api-gateway:
+    build:
+      context: ./packages/api-gateway
+      dockerfile: Dockerfile
+    container_name: ecommerce-api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - SERVICE_NAME=api-gateway
+    networks:
+      - ecommerce-network
+    depends_on:
+      - auth
+      - catalog
+      - cart
+      - orders
+      - payments
+      - notifications
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Authentication Service
+  auth:
+    build:
+      context: ./packages/auth
+      dockerfile: Dockerfile
+    container_name: ecommerce-auth
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - SERVICE_NAME=auth
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Catalog Service
+  catalog:
+    build:
+      context: ./packages/catalog
+      dockerfile: Dockerfile
+    container_name: ecommerce-catalog
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - SERVICE_NAME=catalog
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Cart Service
+  cart:
+    build:
+      context: ./packages/cart
+      dockerfile: Dockerfile
+    container_name: ecommerce-cart
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=production
+      - SERVICE_NAME=cart
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Orders Service
+  orders:
+    build:
+      context: ./packages/orders
+      dockerfile: Dockerfile
+    container_name: ecommerce-orders
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=production
+      - SERVICE_NAME=orders
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Payments Service
+  payments:
+    build:
+      context: ./packages/payments
+      dockerfile: Dockerfile
+    container_name: ecommerce-payments
+    ports:
+      - "3005:3005"
+    environment:
+      - NODE_ENV=production
+      - SERVICE_NAME=payments
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Notifications Service
+  notifications:
+    build:
+      context: ./packages/notifications
+      dockerfile: Dockerfile
+    container_name: ecommerce-notifications
+    ports:
+      - "3006:3006"
+    environment:
+      - NODE_ENV=production
+      - SERVICE_NAME=notifications
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  ecommerce-network:
+    driver: bridge
+
+volumes:
+  # Add volumes here if needed for persistence (databases, logs, etc.)
+  ecommerce-logs:

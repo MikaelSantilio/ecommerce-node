@@ -1,0 +1,31 @@
+# Development Dockerfile with hot reload
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install nodemon globally for hot reload
+RUN npm install -g nodemon ts-node
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm install
+
+# Copy TypeScript config
+COPY tsconfig.json ./
+
+# Expose port
+EXPOSE 3002
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nodeuser -u 1001
+
+# Change ownership of the app directory
+RUN chown -R nodeuser:nodejs /app
+USER nodeuser
+
+# Start the application in development mode with hot reload
+CMD ["npm", "run", "dev"]

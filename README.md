@@ -17,6 +17,30 @@ ecommerce-node/
 └── package.json         # Scripts para gerenciar todos os serviços
 ```
 
+## Quick Start com Makefile
+
+Para facilidade de uso, um Makefile está disponível com comandos simplificados:
+
+```bash
+# Ver todos os comandos disponíveis
+make help
+
+# Instalar dependências
+make install
+
+# Executar em produção com Docker
+make prod
+
+# Executar em desenvolvimento
+make dev
+
+# Verificar saúde dos serviços
+make health
+
+# Limpar tudo
+make clean
+```
+
 ## Instalação
 
 ### Instalar dependências de todos os serviços
@@ -94,6 +118,11 @@ npm run build
 - `npm run build:[servico]` - Faz build de um serviço específico
 - `npm run build:all` - Faz build de todos os serviços
 - `npm run clean` - Remove todos os node_modules e pastas dist dos serviços
+- `npm run docker:up` - Executa todos os serviços em containers (produção)
+- `npm run docker:dev` - Executa todos os serviços em containers (desenvolvimento)
+- `npm run docker:down` - Para todos os containers
+- `npm run docker:logs` - Mostra logs de todos os containers
+- `npm run docker:clean` - Remove todos os containers, volumes e imagens
 
 ### Scripts de cada serviço:
 
@@ -111,10 +140,58 @@ Cada serviço agora possui seu próprio `node_modules`, permitindo:
 - Gerenciamento de dependências por serviço
 - Melhor isolamento entre serviços
 
-## Próximos Passos
+## Docker / Containerização
 
-1. Configurar Docker para cada serviço
-2. Implementar comunicação entre serviços
-3. Adicionar banco de dados para cada serviço
-4. Configurar CI/CD pipeline
-5. Implementar monitoramento e logs
+### Executar todos os serviços com Docker (Produção)
+
+```bash
+# Build e start de todos os serviços
+npm run docker:up
+
+# Ou manualmente
+docker-compose up -d
+
+# Ver logs em tempo real
+npm run docker:logs
+
+# Parar todos os serviços
+npm run docker:down
+```
+
+### Executar em modo desenvolvimento com Docker
+
+```bash
+# Start em modo desenvolvimento (com hot reload)
+npm run docker:dev
+
+# Ver logs do desenvolvimento
+npm run docker:dev:logs
+
+# Parar desenvolvimento
+npm run docker:dev:down
+```
+
+### Outros comandos Docker úteis
+
+```bash
+# Build apenas (sem executar)
+npm run docker:build
+
+# Limpar tudo (containers, volumes, imagens)
+npm run docker:clean
+
+# Verificar saúde dos serviços
+./health-check.sh
+```
+
+### Portas dos serviços
+
+- **API Gateway**: http://localhost:3000
+- **Auth**: http://localhost:3001  
+- **Catalog**: http://localhost:3002
+- **Cart**: http://localhost:3003
+- **Orders**: http://localhost:3004
+- **Payments**: http://localhost:3005
+- **Notifications**: http://localhost:3006
+
+Todos os serviços possuem endpoint `/health` para verificação de status.

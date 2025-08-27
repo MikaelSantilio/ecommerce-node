@@ -1,0 +1,139 @@
+services:
+  # API Gateway - Development with hot reload
+  api-gateway:
+    build:
+      context: ./packages/api-gateway
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce-api-gateway-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - SERVICE_NAME=api-gateway
+    volumes:
+      - ./packages/api-gateway:/app:cached
+      - api-gateway-node-modules:/app/node_modules
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # Authentication Service
+  auth:
+    build:
+      context: ./packages/auth
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce-auth-dev
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - SERVICE_NAME=auth
+    volumes:
+      - ./packages/auth:/app:cached
+      - auth-node-modules:/app/node_modules
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # Catalog Service
+  catalog:
+    build:
+      context: ./packages/catalog
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce-catalog-dev
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - SERVICE_NAME=catalog
+    volumes:
+      - ./packages/catalog:/app:cached
+      - catalog-node-modules:/app/node_modules
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # Cart Service
+  cart:
+    build:
+      context: ./packages/cart
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce-cart-dev
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - SERVICE_NAME=cart
+    volumes:
+      - ./packages/cart:/app:cached
+      - cart-node-modules:/app/node_modules
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # Orders Service
+  orders:
+    build:
+      context: ./packages/orders
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce-orders-dev
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=development
+      - SERVICE_NAME=orders
+    volumes:
+      - ./packages/orders:/app:cached
+      - orders-node-modules:/app/node_modules
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # Payments Service
+  payments:
+    build:
+      context: ./packages/payments
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce-payments-dev
+    ports:
+      - "3005:3005"
+    environment:
+      - NODE_ENV=development
+      - SERVICE_NAME=payments
+    volumes:
+      - ./packages/payments:/app:cached
+      - payments-node-modules:/app/node_modules
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # Notifications Service
+  notifications:
+    build:
+      context: ./packages/notifications
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce-notifications-dev
+    ports:
+      - "3006:3006"
+    environment:
+      - NODE_ENV=development
+      - SERVICE_NAME=notifications
+    volumes:
+      - ./packages/notifications:/app:cached
+      - notifications-node-modules:/app/node_modules
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+networks:
+  ecommerce-network:
+    driver: bridge
+
+volumes:
+  api-gateway-node-modules:
+  auth-node-modules:
+  catalog-node-modules:
+  cart-node-modules:
+  orders-node-modules:
+  payments-node-modules:
+  notifications-node-modules:
