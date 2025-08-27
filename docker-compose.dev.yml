@@ -53,8 +53,12 @@ services:
       - DATABASE_URL=postgresql://ecommerce_user:ecommerce_password@postgres:5432/ecommerce_auth
       - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
     volumes:
-      - ./packages/auth:/app:cached
-      - auth-node-modules:/app/node_modules
+      - ./packages/auth/src:/app/src:cached
+      - ./packages/auth/index.ts:/app/index.ts:cached
+      - ./packages/auth/tsconfig.json:/app/tsconfig.json:cached
+      - ./packages/auth/package.json:/app/package.json:cached
+      - ./packages/auth/package-lock.json:/app/package-lock.json:cached
+      - ./packages/auth/.env:/app/.env:cached
     networks:
       - ecommerce-network
     depends_on:

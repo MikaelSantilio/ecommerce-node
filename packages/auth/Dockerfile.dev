@@ -13,8 +13,12 @@ COPY package*.json ./
 # Install all dependencies (including dev dependencies)
 RUN npm install
 
-# Copy TypeScript config
+# Copy TypeScript config and source code
 COPY tsconfig.json ./
+COPY src/ ./src/
+COPY index.ts ./
+COPY init.sql ./
+COPY .env.example ./
 
 # Expose port
 EXPOSE 3001
@@ -27,5 +31,15 @@ RUN adduser -S nodeuser -u 1001
 RUN chown -R nodeuser:nodejs /app
 USER nodeuser
 
+# Create a startup script that ensures dependencies are installed
+RUN echo '#!/bin/sh' > /app/start-dev.sh && \
+    echo 'cd /app' >> /app/start-dev.sh && \
+    echo 'if [ ! -d "node_modules" ] || [ package.json -nt node_modules/.package-lock.json ]; then' >> /app/start-dev.sh && \
+    echo '  echo "Installing dependencies..."' >> /app/start-dev.sh && \
+    echo '  npm install' >> /app/start-dev.sh && \
+    echo 'fi' >> /app/start-dev.sh && \
+    echo 'exec "$@"' >> /app/start-dev.sh && \
+    chmod +x /app/start-dev.sh
+
 # Start the application in development mode with hot reload
-CMD ["npm", "run", "dev"]
+CMD ["/app/start-dev.sh", "npm", "run", "dev"]
