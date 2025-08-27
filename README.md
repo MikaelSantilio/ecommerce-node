@@ -196,6 +196,104 @@ npm run docker:clean
 
 Todos os serviços possuem endpoint `/health` para verificação de status.
 
+## Cart Service API
+
+O serviço de carrinho gerencia os carrinhos de compras temporários dos usuários usando MongoDB.
+
+### Base URL
+```
+http://localhost:3003
+```
+
+### Endpoints
+
+#### Health Check
+```bash
+curl http://localhost:3003/health
+```
+
+#### Root
+```bash
+curl http://localhost:3003/
+```
+
+### Carrinho
+
+#### Obter Carrinho
+```bash
+curl http://localhost:3003/cart/{userId}
+```
+
+#### Adicionar Item ao Carrinho
+```bash
+curl -X POST http://localhost:3003/cart/{userId}/items \
+  -H "Content-Type: application/json" \
+  -d '{
+    "productId": "product-uuid",
+    "quantity": 2
+  }'
+```
+
+#### Atualizar Quantidade de Item
+```bash
+curl -X PATCH http://localhost:3003/cart/{userId}/items/{itemId} \
+  -H "Content-Type: application/json" \
+  -d '{"quantity": 5}'
+```
+
+#### Remover Item do Carrinho
+```bash
+curl -X DELETE http://localhost:3003/cart/{userId}/items/{itemId}
+```
+
+#### Limpar Carrinho
+```bash
+curl -X DELETE http://localhost:3003/cart/{userId}
+```
+
+#### Obter Contagem de Itens
+```bash
+curl http://localhost:3003/cart/{userId}/count
+```
+
+### Códigos de Status
+- `200` - Sucesso
+- `201` - Item adicionado com sucesso
+- `400` - Dados inválidos
+- `404` - Carrinho ou item não encontrado
+- `500` - Erro interno do servidor
+
+### Formato de Erro
+```json
+{
+  "error": "error_type",
+  "message": "Error description"
+}
+```
+
+### Resposta de Sucesso
+```json
+{
+  "success": true,
+  "data": {
+    "id": "cart-uuid",
+    "userId": "user-uuid",
+    "items": [
+      {
+        "id": "item-uuid",
+        "productId": "product-uuid",
+        "quantity": 2,
+        "unitPrice": 99.99,
+        "addedAt": "2024-01-15T10:30:00.000Z"
+      }
+    ],
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "updatedAt": "2024-01-15T10:30:00.000Z",
+    "total": 199.98
+  }
+}
+```
+
 ## Catalog Service API
 
 O serviço de catálogo fornece endpoints para gerenciamento de categorias e produtos.

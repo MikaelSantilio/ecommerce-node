@@ -20,6 +20,26 @@ services:
       timeout: 5s
       retries: 5
 
+  # MongoDB Database
+  mongodb:
+    image: mongo:7-jammy
+    container_name: ecommerce-mongodb-dev
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # API Gateway - Development with hot reload
   api-gateway:
     build:
@@ -95,11 +115,15 @@ services:
     environment:
       - NODE_ENV=development
       - SERVICE_NAME=cart
+      - MONGODB_URI=mongodb://admin:password@mongodb:27017/ecommerce_cart?authSource=admin
     volumes:
       - ./packages/cart:/app:cached
       - cart-node-modules:/app/node_modules
     networks:
       - ecommerce-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
     restart: unless-stopped
 
   # Orders Service
@@ -162,6 +186,7 @@ networks:
 
 volumes:
   postgres_data:
+  mongodb_data:
   api-gateway-node-modules:
   auth-node-modules:
   catalog-node-modules:
