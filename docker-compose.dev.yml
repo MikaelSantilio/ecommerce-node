@@ -1,4 +1,26 @@
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: ecommerce-postgres-dev
+    environment:
+      POSTGRES_DB: ecommerce_auth
+      POSTGRES_USER: ecommerce_user
+      POSTGRES_PASSWORD: ecommerce_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./packages/auth/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecommerce_user -d ecommerce_auth"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # API Gateway - Development with hot reload
   api-gateway:
     build:
@@ -28,11 +50,16 @@ services:
     environment:
       - NODE_ENV=development
       - SERVICE_NAME=auth
+      - DATABASE_URL=postgresql://ecommerce_user:ecommerce_password@postgres:5432/ecommerce_auth
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
     volumes:
       - ./packages/auth:/app:cached
       - auth-node-modules:/app/node_modules
     networks:
       - ecommerce-network
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
   # Catalog Service
@@ -130,6 +157,7 @@ networks:
     driver: bridge
 
 volumes:
+  postgres_data:
   api-gateway-node-modules:
   auth-node-modules:
   catalog-node-modules:

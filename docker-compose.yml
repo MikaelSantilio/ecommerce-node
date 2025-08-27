@@ -1,4 +1,26 @@
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: ecommerce-postgres
+    environment:
+      POSTGRES_DB: ecommerce_auth
+      POSTGRES_USER: ecommerce_user
+      POSTGRES_PASSWORD: ecommerce_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./packages/auth/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecommerce_user -d ecommerce_auth"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # API Gateway - Main entry point
   api-gateway:
     build:
@@ -38,8 +60,13 @@ services:
     environment:
       - NODE_ENV=production
       - SERVICE_NAME=auth
+      - DATABASE_URL=postgresql://ecommerce_user:ecommerce_password@postgres:5432/ecommerce_auth
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
     networks:
       - ecommerce-network
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
@@ -158,5 +185,5 @@ networks:
     driver: bridge
 
 volumes:
-  # Add volumes here if needed for persistence (databases, logs, etc.)
+  postgres_data:
   ecommerce-logs:
