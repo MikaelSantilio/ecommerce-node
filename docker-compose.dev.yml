@@ -106,8 +106,12 @@ services:
       - SERVICE_NAME=catalog
       - DATABASE_URL=postgresql://ecommerce_user:ecommerce_password@postgres:5432/ecommerce_catalog
     volumes:
-      - ./packages/catalog:/app:cached
-      - catalog-node-modules:/app/node_modules
+      - ./packages/catalog/src:/app/src:cached
+      - ./packages/catalog/index.ts:/app/index.ts:cached
+      - ./packages/catalog/tsconfig.json:/app/tsconfig.json:cached
+      - ./packages/catalog/package.json:/app/package.json:cached
+      - ./packages/catalog/package-lock.json:/app/package-lock.json:cached
+      - ./packages/catalog/.env:/app/.env:cached
     networks:
       - ecommerce-network
     restart: unless-stopped

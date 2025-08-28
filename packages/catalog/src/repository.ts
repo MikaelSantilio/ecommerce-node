@@ -170,7 +170,7 @@ export class ProductRepository {
     ]);
 
     // Convert Decimal prices to numbers
-    const convertedItems = items.map(item => ({
+    const convertedItems = items.map((item: any) => ({
       ...item,
       price: Number(item.price),
     }));
