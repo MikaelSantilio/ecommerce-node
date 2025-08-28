@@ -12,14 +12,10 @@ RUN npm ci --only=production && npm cache clean --force
 
 # Copy TypeScript config and source code
 COPY tsconfig.json ./
-COPY prisma ./prisma
 COPY src ./src
 
 # Install TypeScript and build dependencies temporarily
 RUN npm install typescript ts-node --save-dev
-
-# Generate Prisma client
-RUN npx prisma generate
 
 # Build the application
 RUN npm run build
@@ -28,7 +24,7 @@ RUN npm run build
 RUN npm prune --production
 
 # Expose port
-EXPOSE 3005
+EXPOSE 3006
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs

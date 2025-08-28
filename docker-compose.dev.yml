@@ -56,6 +56,14 @@ services:
       - api-gateway-node-modules:/app/node_modules
     networks:
       - ecommerce-network
+    depends_on:
+      - auth
+      - catalog
+      - cart
+      - orders
+      - payments
+      - notifications
+      - payment-simulator
     restart: unless-stopped
 
   # Authentication Service
@@ -155,11 +163,17 @@ services:
     environment:
       - NODE_ENV=development
       - SERVICE_NAME=payments
+      - DATABASE_URL=postgresql://ecommerce_user:ecommerce_password@postgres:5432/ecommerce_payments
+      - PAYMENT_SIMULATOR_URL=http://payment-simulator:3006
+      - ORDERS_SERVICE_URL=http://orders:3004
     volumes:
       - ./packages/payments:/app:cached
       - payments-node-modules:/app/node_modules
     networks:
       - ecommerce-network
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
   # Notifications Service
@@ -180,6 +194,24 @@ services:
       - ecommerce-network
     restart: unless-stopped
 
+  # Payment Simulator Service
+  payment-simulator:
+    build:
+      context: ./packages/payment-simulator
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce-payment-simulator-dev
+    ports:
+      - "3007:3006"
+    environment:
+      - NODE_ENV=development
+      - SERVICE_NAME=payment-simulator
+    volumes:
+      - ./packages/payment-simulator:/app:cached
+      - payment-simulator-node-modules:/app/node_modules
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
 networks:
   ecommerce-network:
     driver: bridge
@@ -194,3 +226,4 @@ volumes:
   orders-node-modules:
   payments-node-modules:
   notifications-node-modules:
+  payment-simulator-node-modules:

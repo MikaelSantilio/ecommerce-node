@@ -1,17 +1,18 @@
 import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import routes from './src/routes';
+
+dotenv.config();
 
 const app = express();
-const port = 3005;
-const serviceName = 'payments';
+const port = process.env.PORT || 3005;
 
-app.get('/', (req, res) => {
-  res.json({ service: serviceName, message: 'hello' });
-});
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
+app.use(cors());
+app.use(express.json());
+app.use(express.raw({ type: 'application/json' })); // For webhooks
+app.use('/', routes);
 
 app.listen(port, () => {
-  console.log(`Service ${serviceName} listening on port ${port}`);
+  console.log(`Payments service listening on port ${port}`);
 });

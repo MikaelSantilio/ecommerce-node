@@ -40,6 +40,7 @@ services:
       - orders
       - payments
       - notifications
+      - payment-simulator
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
@@ -149,8 +150,14 @@ services:
     environment:
       - NODE_ENV=production
       - SERVICE_NAME=payments
+      - DATABASE_URL=postgresql://ecommerce_user:ecommerce_password@postgres:5432/ecommerce_payments
+      - PAYMENT_SIMULATOR_URL=http://payment-simulator:3006
+      - ORDERS_SERVICE_URL=http://orders:3004
     networks:
       - ecommerce-network
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3005/health"]
@@ -170,6 +177,27 @@ services:
     environment:
       - NODE_ENV=production
       - SERVICE_NAME=notifications
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Payment Simulator Service
+  payment-simulator:
+    build:
+      context: ./packages/payment-simulator
+      dockerfile: Dockerfile
+    container_name: ecommerce-payment-simulator
+    ports:
+      - "3007:3006"
+    environment:
+      - NODE_ENV=production
+      - SERVICE_NAME=payment-simulator
     networks:
       - ecommerce-network
     restart: unless-stopped
