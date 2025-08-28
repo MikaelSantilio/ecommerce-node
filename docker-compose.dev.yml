@@ -153,9 +153,14 @@ services:
     environment:
       - NODE_ENV=development
       - SERVICE_NAME=orders
+      - DATABASE_URL=postgresql://ecommerce_user:ecommerce_password@postgres:5432/ecommerce_orders
     volumes:
-      - ./packages/orders:/app:cached
-      - orders-node-modules:/app/node_modules
+      - ./packages/orders/src:/app/src:cached
+      - ./packages/orders/index.ts:/app/index.ts:cached
+      - ./packages/orders/tsconfig.json:/app/tsconfig.json:cached
+      - ./packages/orders/package.json:/app/package.json:cached
+      - ./packages/orders/package-lock.json:/app/package-lock.json:cached
+      - ./packages/orders/.env:/app/.env:cached
     networks:
       - ecommerce-network
     restart: unless-stopped
