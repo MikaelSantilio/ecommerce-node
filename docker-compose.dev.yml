@@ -129,8 +129,12 @@ services:
       - SERVICE_NAME=cart
       - MONGODB_URI=mongodb://admin:password@mongodb:27017/ecommerce_cart?authSource=admin
     volumes:
-      - ./packages/cart:/app:cached
-      - cart-node-modules:/app/node_modules
+      - ./packages/cart/src:/app/src:cached
+      - ./packages/cart/index.ts:/app/index.ts:cached
+      - ./packages/cart/tsconfig.json:/app/tsconfig.json:cached
+      - ./packages/cart/package.json:/app/package.json:cached
+      - ./packages/cart/package-lock.json:/app/package-lock.json:cached
+      - ./packages/cart/.env:/app/.env:cached
     networks:
       - ecommerce-network
     depends_on:
