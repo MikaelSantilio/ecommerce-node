@@ -171,8 +171,12 @@ services:
       - PAYMENT_SIMULATOR_URL=http://payment-simulator:3006
       - ORDERS_SERVICE_URL=http://orders:3004
     volumes:
-      - ./packages/payments:/app:cached
-      - payments-node-modules:/app/node_modules
+      - ./packages/payments/src:/app/src:cached
+      - ./packages/payments/index.ts:/app/index.ts:cached
+      - ./packages/payments/tsconfig.json:/app/tsconfig.json:cached
+      - ./packages/payments/package.json:/app/package.json:cached
+      - ./packages/payments/package-lock.json:/app/package-lock.json:cached
+      - ./packages/payments/.env:/app/.env:cached
     networks:
       - ecommerce-network
     depends_on:
