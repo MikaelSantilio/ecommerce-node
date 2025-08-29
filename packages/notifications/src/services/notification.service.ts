@@ -77,7 +77,7 @@ export class NotificationService {
         result = await this.sendSmsNotification(notification, content);
       }
 
-      // Atualizar status para SENT
+      // Só atualizar para SENT se chegou até aqui sem erro
       await Notification.findByIdAndUpdate(notificationId, {
         status: NotificationStatus.SENT,
         sentAt: new Date()
@@ -87,12 +87,14 @@ export class NotificationService {
     } catch (error: any) {
       console.error(`❌ Failed to process notification ${notificationId}:`, error);
 
-      // Atualizar status para FAILED
+      // Atualizar status para FAILED com detalhes do erro
       await Notification.findByIdAndUpdate(notificationId, {
         status: NotificationStatus.FAILED,
-        error: error.message
+        error: error.message,
+        $inc: { retryCount: 1 }
       });
 
+      // Re-throw para que o worker saiba que falhou
       throw error;
     }
   }
@@ -154,10 +156,13 @@ export class NotificationService {
       throw new Error('Invalid phone number');
     }
 
+    // Otimizar mensagem para SMS
+    const optimizedMessage = SmsService.optimizeMessage(messageContent);
+
     return await SmsService.sendSms({
       notificationId: notification._id.toString(),
       to: formattedPhone,
-      message: messageContent,
+      message: optimizedMessage,
       priority: notification.priority
     });
   }
