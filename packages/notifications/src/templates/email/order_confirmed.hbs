@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Pedido Confirmado - E-commerce</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #4CAF50; color: white; padding: 20px; text-align: center; }
+    .content { padding: 20px; background: #f9f9f9; }
+    .order-details { background: white; padding: 15px; margin: 15px 0; border-radius: 5px; }
+    .item { display: flex; justify-content: space-between; padding: 5px 0; }
+    .total { font-weight: bold; font-size: 18px; color: #4CAF50; }
+    .footer { text-align: center; padding: 20px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 Pedido Confirmado!</h1>
+    </div>
+
+    <div class="content">
+      <p>Olá <strong>{{user.name}}</strong>,</p>
+      <p>Seu pedido <strong>#{{order.id}}</strong> foi confirmado com sucesso!</p>
+
+      <div class="order-details">
+        <h3>📋 Detalhes do Pedido</h3>
+        <div class="item">
+          <span>Total:</span>
+          <span class="total">R$ {{order.total}}</span>
+        </div>
+        <div class="item">
+          <span>Data:</span>
+          <span>{{formatDate order.createdAt}}</span>
+        </div>
+
+        <h4>Itens do Pedido:</h4>
+        {{#each order.items}}
+        <div class="item">
+          <span>{{quantity}}x {{product.name}}</span>
+          <span>R$ {{price}}</span>
+        </div>
+        {{/each}}
+      </div>
+
+      {{#if order.shipping}}
+      <div class="order-details">
+        <h4>📦 Endereço de Entrega</h4>
+        <p>{{order.shipping.address}}</p>
+        <p>{{order.shipping.city}} - {{order.shipping.state}}</p>
+        <p>CEP: {{order.shipping.zipCode}}</p>
+      </div>
+      {{/if}}
+
+      <p>📦 Seu pedido será processado em breve e você receberá atualizações sobre o status da entrega.</p>
+      <p>Para acompanhar seu pedido, acesse: <a href="{{trackingUrl}}">{{trackingUrl}}</a></p>
+
+      <p>Atenciosamente,<br>
+      <strong>Equipe E-commerce</strong></p>
+    </div>
+
+    <div class="footer">
+      <p>Este é um email automático, por favor não responda.</p>
+      <p>© 2025 E-commerce. Todos os direitos reservados.</p>
+    </div>
+  </div>
+</body>
+</html>

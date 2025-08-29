@@ -40,6 +40,23 @@ services:
       timeout: 5s
       retries: 5
 
+  # Redis Cache and Queue
+  redis:
+    image: redis:7-alpine
+    container_name: ecommerce-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
   # API Gateway - Development with hot reload
   api-gateway:
     build:
@@ -204,11 +221,24 @@ services:
     environment:
       - NODE_ENV=development
       - SERVICE_NAME=notifications
+      - MONGODB_URI=mongodb://admin:password@mongodb:27017/ecommerce_notifications?authSource=admin
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     volumes:
-      - ./packages/notifications:/app:cached
-      - notifications-node-modules:/app/node_modules
+      - ./packages/notifications/src:/app/src:cached
+      - ./packages/notifications/index.ts:/app/index.ts:cached
+      - ./packages/notifications/tsconfig.json:/app/tsconfig.json:cached
+      - ./packages/notifications/package.json:/app/package.json:cached
+      - ./packages/notifications/package-lock.json:/app/package-lock.json:cached
+      - ./packages/notifications/.env:/app/.env:cached
     networks:
       - ecommerce-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
   # Payment Simulator Service
@@ -236,6 +266,7 @@ networks:
 volumes:
   postgres_data:
   mongodb_data:
+  redis_data:
   api-gateway-node-modules:
   auth-node-modules:
   catalog-node-modules:
